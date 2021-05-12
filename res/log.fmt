@@ -1,0 +1,16 @@
+str,remote_addr
+str,remote_port
+noop,time_local
+str,request_method
+str,uri
+noop,args
+str,server_protocol
+str,status
+isize,body_bytes_sent
+noop,http_referer
+noop,my_trans_id
+str,my_http_header_field
+str,upstream_addr
+f64,upstream_response_time
+f64,request_time
+str,server_name
