@@ -36,4 +36,11 @@ impl NginxStat {
         }
         res.join("\n==========\n")
     }
+    pub fn add_data(&mut self, datas: Vec<String>) {
+        let mut index: usize = 0;
+        for data in datas {
+            self.stats[index].add(data);
+            index += 1;
+        }
+    }
 }

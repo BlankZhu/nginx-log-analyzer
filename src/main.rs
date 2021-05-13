@@ -8,7 +8,7 @@ use nginx_log_analyzer::NginxLogAnalyzer;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 3 {
-        println!("not enough arguments, use the command like: mc_process /path/to/log_format /path/to/access_log");
+        println!("not enough arguments, use the command like: nginx-log-analyzer /path/to/log_format /path/to/access_log");
         return;
     }
     let log_format = args[1].as_str();
