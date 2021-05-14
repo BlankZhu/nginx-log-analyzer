@@ -1,1 +1,1 @@
-'$remote_addr\t$remote_port\t[$time_local]\t$request_method\t$uri\t$args\t$server_protocol\t$status\t$body_bytes_sent\t"$http_referer"\t''"$http_trans_id"\t"$http_oper"\t$upstream_addr\t$upstream_response_time\t$request_time\t$server_name'
+$remote_addr	$remote_port	[$time_local]	$request_method	$uri	$args	$server_protocol	$status	$body_bytes_sent	"$http_referer"	"$my_trans_id"	"$my_http_header_field"	$upstream_addr	$upstream_response_time	$request_time	$server_name

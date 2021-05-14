@@ -8,27 +8,11 @@ impl NginxStat {
     pub fn new() -> NginxStat {
         NginxStat { stats: Vec::new() }
     }
+
     pub fn add_title(&mut self, stat: Box<dyn Stat>) {
         self.stats.push(stat);
     }
-    pub fn read_line(&mut self, line: String) -> Result<(), String> {
-        let splited = line.trim().split('\t').collect::<Vec<&str>>();
-        if splited.len() != self.stats.len() {
-            let err_msg = format!(
-                "NginxStat title({}) not fit in with line({})",
-                self.stats.len(),
-                splited.len()
-            );
-            return Err(err_msg);
-        }
 
-        let mut index: usize = 0;
-        for token in splited {
-            self.stats[index].add(String::from(token));
-            index += 1;
-        }
-        Ok(())
-    }
     pub fn get_result(&mut self) -> String {
         let mut res: Vec<String> = Vec::new();
         for b in self.stats.iter_mut() {
@@ -36,11 +20,25 @@ impl NginxStat {
         }
         res.join("\n==========\n")
     }
+
     pub fn add_data(&mut self, datas: Vec<String>) {
+        if datas.len() != self.stats.len() {
+            let titles = self.get_titles();
+            panic!("cannot load access log data to Nginx stat analyzer, with title: \n`{}`\nline: \n`{}`\n", titles, datas.join(","));
+        }
+
         let mut index: usize = 0;
         for data in datas {
             self.stats[index].add(data);
             index += 1;
         }
+    }
+
+    fn get_titles(&self) -> String {
+        let mut sb: Vec<String> = Vec::new();
+        for s in &self.stats {
+            sb.push(s.title().clone());
+        }
+        return sb.join(",");
     }
 }

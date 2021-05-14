@@ -4,7 +4,11 @@ use crate::stat::{
     stat_factory::{StatFactory, StatType::*},
 };
 use regex::Regex;
-use std::{fmt::format, fs::{File, read_to_string}, io::{self, BufRead}, path::Path};
+use std::{
+    fs::{read_to_string, File},
+    io::{self, BufRead},
+    path::Path,
+};
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -20,10 +24,10 @@ const F64_S: &str = "f64";
 const NOOP_S: &str = "noop";
 
 pub struct NginxLogAnalyzer {
-    nginx_stat: NginxStat,
-    titles: Vec<String>,
-    types: Vec<String>,
-    extract_regex: Regex,
+    nginx_stat: NginxStat, // stores the data processor
+    titles: Vec<String>,   // stores titles in string
+    types: Vec<String>,    // stores the types in string
+    extract_regex: Regex,  // stores the generated extract regex for access log
 }
 
 impl NginxLogAnalyzer {
@@ -36,91 +40,27 @@ impl NginxLogAnalyzer {
         }
     }
 
-    pub fn apply_log_format(&mut self, file_path: &str) -> Result<(), InvalidLogFormatError> {
-        // pub fn apply_log_format(&mut self, file_path: &str) {
-        if let Ok(lines) = read_lines(file_path) {
-            for line in lines {
-                match line {
-                    Ok(line) => {
-                        // trim
-                        let line = line.trim();
-                        // split by ','
-                        let splited = line.split(',').collect::<Vec<&str>>();
-                        // check splited length
-                        if splited.len() != 2 {
-                            let err_msg =
-                                format!("NginxLogAnalyzer got invalid log format line: {}", line);
-                            return Err(InvalidLogFormatError::new(err_msg));
-                        }
-                        // match to generate Stat
-                        let typ = splited[0].to_ascii_lowercase();
-                        let title = splited[1];
-                        match typ.as_str() {
-                            STR_S => {
-                                self.nginx_stat
-                                    .add_title(StatFactory::create_stat(StrStatType, title));
-                            }
-                            ISIZE_S => {
-                                self.nginx_stat
-                                    .add_title(StatFactory::create_stat(IsizeStatType, title));
-                            }
-                            F64_S => {
-                                self.nginx_stat
-                                    .add_title(StatFactory::create_stat(F64StatType, title));
-                            }
-                            NOOP_S => {
-                                self.nginx_stat
-                                    .add_title(StatFactory::create_stat(NoopStatType, title));
-                            }
-                            _ => {
-                                let err_msg = format!("failed to parse type from {}", typ);
-                                return Err(InvalidLogFormatError::new(err_msg));
-                            }
-                        }
-                    }
-                    Err(err) => {
-                        return Err(InvalidLogFormatError::new(err.to_string()));
-                    }
-                }
-            }
-        } else {
-            let err_msg = format!(
-                "NginxLogAnalyzer failed to read log format at {}",
-                file_path
-            );
-            return Err(InvalidLogFormatError::new(err_msg));
-        }
-        Ok(())
-    }
-
-    pub fn apply_access_log(&mut self, file_path: &str) -> Result<(), InvalidAccessLogError> {
-        if let Ok(lines) = read_lines(file_path) {
-            for line in lines {
-                match line {
-                    Ok(line) => {
-                        let res = self.nginx_stat.read_line(line);
-                        match res {
-                            Err(err_msg) => {
-                                return Err(InvalidAccessLogError::new(err_msg));
-                            }
-                            _ => {}
-                        }
-                    }
-                    Err(err) => {
-                        eprintln!("failed to read line, detail: {}", err);
-                        continue;
-                    }
-                }
-            }
-        } else {
-            let err_msg = format!("cannot read file at {}", file_path);
-            return Err(InvalidAccessLogError::new(err_msg));
-        }
-        Ok(())
-    }
-
     pub fn get_result(&mut self) -> String {
         self.nginx_stat.get_result()
+    }
+
+    pub fn debug_print_detail(&self) {
+        // let mut sb = string_builder::Builder::default();
+        let mut sb = String::new();
+
+        sb.push_str("Titles:\n");
+        sb.push_str(&self.titles.join(","));
+        sb.push_str("\n");
+
+        sb.push_str("Types:\n");
+        sb.push_str(&self.types.join(","));
+        sb.push_str("\n");
+
+        sb.push_str("Extract regex: ");
+        sb.push_str(&self.extract_regex.to_string());
+        sb.push_str("\n");
+
+        println!("{}", sb);
     }
 
     pub fn apply_access_log_file(&mut self, file_path: &str) -> Result<(), InvalidAccessLogError> {
@@ -130,7 +70,7 @@ impl NginxLogAnalyzer {
                 for line in lines {
                     match line {
                         Ok(line) => {
-                            let datas = self.match_access_log_line(&line,&self.extract_regex);
+                            let datas = self.match_access_log_line(&line, &self.extract_regex);
                             self.nginx_stat.add_data(datas);
                         }
                         Err(err) => {
@@ -139,7 +79,7 @@ impl NginxLogAnalyzer {
                         }
                     }
                 }
-            },
+            }
             Err(err) => {
                 let err_msg = format!("cannot read file at {}, detail: {}", file_path, err);
                 return Err(InvalidAccessLogError::new(err_msg));
@@ -148,19 +88,23 @@ impl NginxLogAnalyzer {
         Ok(())
     }
 
-    pub fn apply_log_format_files(&mut self, log_fmt_file: &str, stat_type_file: &str) -> Result<(), LoadFileError> {
+    pub fn apply_log_format_files(
+        &mut self,
+        log_fmt_file: &str,
+        stat_type_file: &str,
+    ) -> Result<(), LoadFileError> {
         let apply_res = self.apply_log_format_file(log_fmt_file);
         match apply_res {
-            Ok(()) => {},
+            Ok(()) => {}
             Err(err) => {
                 let err_msg = format!("invalid log format, detail: {}", err);
                 return Err(LoadFileError::new(err_msg));
             }
         }
-        
+
         let apply_res = self.apply_stat_type_file(stat_type_file);
         match apply_res {
-            Ok(()) => {},
+            Ok(()) => {}
             Err(err) => {
                 let err_msg = format!("invalid stat type error, detail: {}", err);
                 return Err(LoadFileError::new(err_msg));
@@ -168,7 +112,12 @@ impl NginxLogAnalyzer {
         }
 
         if self.titles.len() != self.types.len() {
-            let err_msg = format!("titles length incapable with types length");
+            let err_msg = format!(
+                "titles length [{}] incapable with types length [{}]",
+                self.titles.len(),
+                self.types.len()
+            );
+            self.debug_print_detail();
             return Err(LoadFileError::new(err_msg));
         }
 
@@ -208,24 +157,30 @@ impl NginxLogAnalyzer {
         let lines = read_lines(file_path);
         match lines {
             Ok(lines) => {
-                let mut content = String::new();
+                let mut sb = String::new();
                 for line in lines {
                     match line {
                         Ok(line) => {
-                            content.push_str(&line);
+                            sb.push_str(&line);
                         }
                         Err(err) => {
-                            let err_msg = format!("failed to read line in file {}, detail: {}", file_path, err);
+                            let err_msg = format!(
+                                "failed to read line in file {}, detail: {}",
+                                file_path, err
+                            );
                             return Err(InvalidLogFormatError::new(err_msg));
                         }
                     }
                 }
-                let lf = self.trim_nginx_log_format_str(&content);
+                let lf = self.trim_nginx_log_format_str(&sb);
                 self.titles = self.extract_titles(&lf);
                 self.extract_regex = self.generate_extract_regex(&lf, &self.titles);
-            },
+            }
             Err(err) => {
-                let err_msg = format!("cannot read log format file at {}, detail: {}", file_path, err);
+                let err_msg = format!(
+                    "cannot read log format file at {}, detail: {}",
+                    file_path, err
+                );
                 return Err(InvalidLogFormatError::new(err_msg));
             }
         }
@@ -242,9 +197,12 @@ impl NginxLogAnalyzer {
                 for elem in elems {
                     self.types.push(elem.to_string());
                 }
-            },
+            }
             Err(err) => {
-                let err_msg = format!("cannot read stat type file at {}, detail: {}", file_path, err);
+                let err_msg = format!(
+                    "cannot read stat type file at {}, detail: {}",
+                    file_path, err
+                );
                 return Err(InvalidStatTypeError::new(err_msg));
             }
         }
@@ -270,13 +228,11 @@ impl NginxLogAnalyzer {
 
     fn generate_extract_regex(&self, nginx_log_format: &String, titles: &Vec<String>) -> Regex {
         let mut to_search = &nginx_log_format[..];
-        let mut re = String::new();
+        let mut re = String::from("^");
 
         // search prefix
         if let Some(first) = titles.first() {
-            println!("first title: {}", first);
             if let Some(first_pos) = to_search.find(first) {
-                println!("first title found at: {}", first_pos);
                 if first_pos != 0 {
                     println!("prefix exist");
                     // prefix exist
@@ -302,6 +258,7 @@ impl NginxLogAnalyzer {
         if to_search.len() != 0 {
             re.push_str(&to_search.to_string());
         }
+        re.push_str("$");
 
         return Regex::new(re.as_str()).unwrap();
     }
@@ -310,13 +267,20 @@ impl NginxLogAnalyzer {
         let mut ret = Vec::new();
 
         for caps in re.captures_iter(line) {
-            for cap in caps.iter() {
-                match cap {
-                    Some(cap) => {
-                        ret.push(String::from(cap.as_str()));
-                    }
-                    None => continue,
-                }
+            if caps.len() != self.titles.len() + 1 {
+                eprintln!(
+                    "invalid matching, only {} elems were matched on line: `{}`",
+                    caps.len(),
+                    line
+                );
+                continue;
+            }
+
+            let mut i = 1;
+            while i < caps.len() {
+                let cap = &caps[i];
+                ret.push(String::from(cap));
+                i += 1;
             }
         }
 
