@@ -23,7 +23,7 @@ This example uses the example access log and format file in `nginx-log-analyzer/
 An quick example will start like the following:
 
 ```shell
-./nginx-log-analyzer log.fmt access.log
+./nginx-log-analyzer -l res/log.fmt -t res/typ.fmt -a res/access.log
 ```
 
 Which returns you a simple overview for access.log:
@@ -134,6 +134,12 @@ detail:
 
 Simple, but enough for most of time if you want to locate what problems may  have occurred.
 
+If you need more information about command line arguments, use:
+
+```shell
+./nginx-log-analyzer -h
+```
+
 ## Apply Log Format
 
 To adapt your own Nginx log format, there are only a few syntax rules for the log format file you need to know.
@@ -155,22 +161,20 @@ http {
 }
 ```
 
-The log format file used by the analyzer is organized sequentially like below:
+The log format file used by the analyzer is organized sequentially in one line like below:
 
 ```txt
-str,remote_addr
-str,remote_user
-noop,time_local
-str,request
-str,status
-isize,body_bytes_sent
-noop,http_referer
-str,http_user_agent
+$remote_addr	$remote_port	[$time_local]	$request_method	$uri	$args	$server_protocol	$status	$body_bytes_sent	"$http_referer"	"$my_trans_id"	"$my_http_header_field"	$upstream_addr	$upstream_response_time	$request_time	$server_name
 ```
 
-Each line represents a log element in Nginx's log format.
+And the type format will be like:
 
-The line is in the formant: `[DataType][Name]`.
+```txt
+str,str,noop,str,str,noop,str,str,isize,noop,noop,str,str,f64,noop,str
+```
+
+Which means that you need to `escape` the `log_format` string written in your Nginx config section to the analyzer's log format file. Then, apply types to the fileds correspondly and seperate them by a comma. If you want to ignore some specific fileds, apply `noop` type to them.
+
 
 ### Use Correct Type
 
@@ -184,3 +188,5 @@ The analyzer provides 4 types for data in the access log:
 ## Others
 
 Feel free to launch any issue or pull request.
+
+Hopt this little tool save you some time.
