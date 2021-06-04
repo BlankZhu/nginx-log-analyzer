@@ -1,17 +1,19 @@
 mod stat;
 mod nginx_log_analyzer;
 mod nginx_log_analyze_error;
+mod nginx_log_analyzer_cli;
 
+use clap::Clap;
 use nginx_log_analyzer::NginxLogAnalyzer;
-
+use nginx_log_analyzer_cli::NginxLogAnalyzerCli;
 
 fn main() {
-    let log_fmt = "res/log.fmt";
-    let typ_fmt = "res/type.fmt";
-    let access_log = "res/access.log";
+    let cli = NginxLogAnalyzerCli::parse();
+    println!("using log fmt file `{}`, type fmt file `{}`, access log `{}`", cli.logfmt, cli.typfmt, cli.acclog);
+
     let mut analyzer = NginxLogAnalyzer::new();
 
-    let apply_result = analyzer.apply_log_format_files(log_fmt, typ_fmt);
+    let apply_result = analyzer.apply_log_format_files(&cli.logfmt,&cli.typfmt);
     match apply_result {
         Ok(()) => {},
         Err(err) => {
@@ -20,7 +22,7 @@ fn main() {
         }
     }
 
-    let analyze_result = analyzer.apply_access_log_file(access_log);
+    let analyze_result = analyzer.apply_access_log_file(&cli.acclog);
     match analyze_result {
         Ok(()) => {},
         Err(err) => {
