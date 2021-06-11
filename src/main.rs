@@ -1,11 +1,11 @@
 mod stat;
-mod nginx_log_analyzer;
-mod nginx_log_analyze_error;
-mod nginx_log_analyzer_cli;
+mod analyzer;
+mod error;
+mod cli;
 
 use clap::Clap;
-use nginx_log_analyzer::NginxLogAnalyzer;
-use nginx_log_analyzer_cli::NginxLogAnalyzerCli;
+use analyzer::NginxLogAnalyzer;
+use cli::NginxLogAnalyzerCli;
 
 fn main() {
     let cli = NginxLogAnalyzerCli::parse();

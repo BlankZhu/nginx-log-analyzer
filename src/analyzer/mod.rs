@@ -1,4 +1,7 @@
-use crate::nginx_log_analyze_error::*;
+use crate::error::{
+    invalid_access_log_error::*, invalid_log_format_error::*, invalid_stat_type_error::*,
+    load_file_error::*,
+};
 use crate::stat::{
     nginx_stat::NginxStat,
     stat_factory::{StatFactory, StatType::*},
