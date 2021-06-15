@@ -29,112 +29,119 @@ An quick example will start like the following:
 Which returns you a simple overview for access.log:
 
 ```shell
-remote_addr
-count:  100
+$remote_addr
+count:	100
 detail:
-- 10.64.12.118  46.0000%
-- 10.64.101.36  12.0000%
-- 10.64.10.221  42.0000%
+- 10.64.12.118	46.0000%
+- 10.64.101.36	12.0000%
+- 10.64.10.221	42.0000%
 ==========
-remote_port
-count:  100
+$remote_port
+count:	100
 detail:
-- 39145 42.0000%
-- 46270 46.0000%
-- 48888 12.0000%
+- 39145	42.0000%
+- 48888	12.0000%
+- 46270	46.0000%
 ==========
-time_local(Noop)
+$time_local(Noop)
 no avaliable information
 ==========
-request_method
-count:  100
+$request_method
+count:	100
 detail:
-- GET   100.0000%
+- GET	100.0000%
 ==========
-uri
-count:  100
+$uri
+count:	100
 detail:
-- /ComplexOper.action   1.0000%
-- /cargo/test.html      22.0000%
-- /primitives/tuples    36.0000%
-- /std_misc/arg.html    41.0000%
+- /cargo/test.html	22.0000%
+- /ComplexOper.action	1.0000%
+- /std_misc/arg.html	41.0000%
+- /primitives/tuples	36.0000%
 ==========
-args(Noop)
+$args(Noop)
 no avaliable information
 ==========
-server_protocol
-count:  100
+$server_protocol
+count:	100
 detail:
-- HTTP/1.1      100.0000%
+- HTTP/1.1	100.0000%
 ==========
-status
-count:  100
+$status
+count:	100
 detail:
-- 400   4.0000%
-- 200   96.0000%
+- 200	96.0000%
+- 400	4.0000%
 ==========
-body_bytes_sent
-count:  100
-max:    8187054
-min:    14
-total:  9318505
-average:        93185.05
-variance:       665705838293.4482
-STD:    815907.9839623143
+$body_bytes_sent
+count:	100
+max:	8187054
+min:	14
+total:	9318505
+average:	93185.05
+variance:	665705838293.4482
+STD:	815907.9839623143
 ==========
-http_referer(Noop)
+$http_referer(Noop)
 no avaliable information
 ==========
-my_trans_id(Noop)
+$my_trans_id(Noop)
 no avaliable information
 ==========
-my_http_header_field
-count:  100
+$my_http_header_field
+count:	100
 detail:
-- "GetAbsList"  1.0000%
-- "CheckAPI"    20.0000%
-- "GetUID"      34.0000%
-- "GetMail"     18.0000%
-- "GetDomainId" 2.0000%
-- "GetAbstract" 4.0000%
-- "GetByCond"   21.0000%
+- GetUID	34.0000%
+- GetDomainId	2.0000%
+- CheckAPI	20.0000%
+- GetAbsList	1.0000%
+- GetAbstract	4.0000%
+- GetByCond	21.0000%
+- GetMail	18.0000%
 ==========
-upstream_addr
-count:  100
+$upstream_addr
+count:	100
 detail:
-- 172.27.18.51:8080     21.0000%
-- 172.27.19.18:8080     20.0000%
-- 172.27.18.18:8080     20.0000%
-- 172.27.18.50:8080     20.0000%
-- 172.27.8.20:8080      19.0000%
+- 172.27.18.51:8080	21.0000%
+- 172.27.18.50:8080	20.0000%
+- 172.27.18.18:8080	20.0000%
+- 172.27.8.20:8080	19.0000%
+- 172.27.19.18:8080	20.0000%
 ==========
-upstream_response_time
-count:  100
-max:    0.428
-min:    0.004
-total:  2.736999999999997
-average:        0.02736999999999997
-variance:       0.0038208531000000013
-STD:    0.06181304959310777
+$upstream_response_time
+count:	100
+max:	0.428
+min:	0.004
+total:	2.736999999999997
+average:	0.02736999999999997
+variance:	0.0038208531000000013
+STD:	0.06181304959310777
 ==========
-request_time
-count:  100
-max:    0.428
-min:    0.004
-total:  2.741999999999996
-average:        0.02741999999999996
-variance:       0.0038204035999999998
-STD:    0.06180941352253716
+$request_time(Noop)
+no avaliable information
 ==========
-server_name
-count:  100
+$server_name
+count:	100
 detail:
-- my-service.com        100.0000%
+- my-service.com	100.0000%
 ```
 
 Simple, but enough for most of time if you want to locate what problems may  have occurred.
 
-If you need more information about command line arguments, use:
+You can also use JSON output:
+
+```shell
+./nginx-log-analyzer -l res/log.fmt -t res/typ.fmt -a res/access.log -j
+```
+
+Which will give you JSON output:
+
+```json
+[{"title":"$remote_addr","count":100,"percentage":{"10.64.101.36":0.12,"10.64.12.118":0.46,"10.64.10.221":0.42}},{"title":"$remote_port","count":100,"percentage":{"46270":0.46,"39145":0.42,"48888":0.12}},{"title":"$time_local"},{"title":"$request_method","count":100,"percentage":{"GET":1.0}},{"title":"$uri","count":100,"percentage":{"/primitives/tuples":0.36,"/std_misc/arg.html":0.41,"/cargo/test.html":0.22,"/ComplexOper.action":0.01}},{"title":"$args"},{"title":"$server_protocol","count":100,"percentage":{"HTTP/1.1":1.0}},{"title":"$status","count":100,"percentage":{"200":0.96,"400":0.04}},{"title":"$body_bytes_sent","total":9318505,"count":100,"average":93185.05,"variance":665705838293.4482,"std_variance":815907.9839623143,"max":8187054,"min":14},{"title":"$http_referer"},{"title":"$my_trans_id"},{"title":"$my_http_header_field","count":100,"percentage":{"GetByCond":0.21,"GetAbsList":0.01,"CheckAPI":0.2,"GetMail":0.18,"GetUID":0.34,"GetDomainId":0.02,"GetAbstract":0.04}},{"title":"$upstream_addr","count":100,"percentage":{"172.27.8.20:8080":0.19,"172.27.18.18:8080":0.2,"172.27.19.18:8080":0.2,"172.27.18.50:8080":0.2,"172.27.18.51:8080":0.21}},{"title":"$upstream_response_time","total":2.736999999999997,"count":100,"average":0.02736999999999997,"variance":0.0038208531000000013,"std_variance":0.06181304959310777,"max":0.428,"min":0.004},{"title":"$request_time"},{"title":"$server_name","count":100,"percentage":{"my-service.com":1.0}}]
+```
+
+
+For more information about command line arguments, use:
 
 ```shell
 ./nginx-log-analyzer -h
@@ -164,7 +171,7 @@ http {
 The log format file used by the analyzer is organized sequentially in one line like below:
 
 ```txt
-$remote_addr	$remote_port	[$time_local]	$request_method	$uri	$args	$server_protocol	$status	$body_bytes_sent	"$http_referer"	"$my_trans_id"	"$my_http_header_field"	$upstream_addr	$upstream_response_time	$request_time	$server_name
+$remote_addr $remote_port [$time_local] $"request" $status $body_bytes_sent "$http_referer" "$http_user_agent"
 ```
 
 And the type format will be like:
