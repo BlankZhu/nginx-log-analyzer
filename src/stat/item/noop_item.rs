@@ -15,11 +15,19 @@ impl Item for NoopItem {
         0
     }
 
-    fn title(&self) -> &str {
-        self.title.as_str()
+    fn title(&self) -> String {
+        self.title.clone()
     }
 
     fn get_result(&self) -> Box<dyn ItemResult> {
         Box::new(NoopResult::new(self.title.as_str()))
+    }
+}
+
+impl NoopItem {
+    pub fn new(title: &str) -> NoopItem {
+        NoopItem {
+            title: title.to_string(),
+        }
     }
 }

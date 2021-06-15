@@ -9,6 +9,6 @@ use result::ItemResult;
 pub trait Item {
     fn add(&mut self, elem: &str);
     fn count(&self) -> usize;
-    fn title(&self) -> &str;
+    fn title(&self) -> String;
     fn get_result(&self) -> Box<dyn ItemResult>;
 }

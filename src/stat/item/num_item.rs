@@ -1,3 +1,5 @@
+use super::result::num_result::{F64Result, IsizeResult};
+use super::result::ItemResult;
 use super::Item;
 
 pub struct IsizeItem {
@@ -25,12 +27,21 @@ impl Item for IsizeItem {
         self.data.len()
     }
 
-    fn title(&self) -> &str {
-        self.title.as_str()
+    fn title(&self) -> String {
+        self.title.clone()
     }
 
-    fn get_result(&self) -> Box<dyn super::result::ItemResult> {
-        todo!()
+    fn get_result(&self) -> Box<dyn ItemResult> {
+        Box::new(IsizeResult::new(self.title.as_str(), &self.data))
+    }
+}
+
+impl IsizeItem {
+    pub fn new(title: &str) -> IsizeItem {
+        IsizeItem {
+            title: title.to_string(),
+            data: Vec::new(),
+        }
     }
 }
 
@@ -59,10 +70,20 @@ impl Item for F64Item {
         self.data.len()
     }
 
-    fn title(&self) -> &str {
-        self.title.as_str()
+    fn title(&self) -> String {
+        self.title.clone()
     }
-    fn get_result(&self) -> Box<dyn super::result::ItemResult> {
-        todo!()
+
+    fn get_result(&self) -> Box<dyn ItemResult> {
+        Box::new(F64Result::new(self.title.as_str(), &self.data))
+    }
+}
+
+impl F64Item {
+    pub fn new(title: &str) -> F64Item {
+        F64Item {
+            title: title.to_string(),
+            data: Vec::new(),
+        }
     }
 }

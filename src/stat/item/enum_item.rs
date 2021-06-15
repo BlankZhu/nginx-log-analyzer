@@ -1,5 +1,7 @@
-use std::collections::HashMap;
+use super::result::enum_result::StrResult;
+use super::result::ItemResult;
 use super::Item;
+use std::collections::HashMap;
 
 pub struct StrItem {
     title: String,
@@ -21,11 +23,21 @@ impl Item for StrItem {
         self.count
     }
 
-    fn title(&self) -> &str {
-        self.title.as_str()
+    fn title(&self) -> String {
+        self.title.clone()
     }
 
-    fn get_result(&self) -> Box<dyn super::result::ItemResult> {
-        todo!()
+    fn get_result(&self) -> Box<dyn ItemResult> {
+        Box::new(StrResult::new(self.title.as_str(), self.count, &self.map))
+    }
+}
+
+impl StrItem {
+    pub fn new(title: &str) -> StrItem {
+        StrItem {
+            title: title.to_string(),
+            count: 0,
+            map: HashMap::new(),
+        }
     }
 }
