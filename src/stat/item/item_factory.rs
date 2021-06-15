@@ -22,7 +22,6 @@ impl ItemFactory {
             ItemType::IsizeItemType => Box::new(IsizeItem::new(title)),
             ItemType::NoopItemType => Box::new(NoopItem::new(title)),
             ItemType::StrItemType => Box::new(StrItem::new(title)),
-            _ => Box::new(NoopItem::new(title)),
         }
     }
 }

@@ -13,7 +13,7 @@ pub struct NginxLogAnalyzerCli {
     #[clap(short, long, default_value = "res/access.log", about = "access log file")]
     pub acclog: String,
 
-    #[clap(short, long, default_value = "standard", about = "output format (standard/json)")]
-    pub output: String
+    #[clap(short, long, about = "use json output")]
+    pub json: bool,
 }
 

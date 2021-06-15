@@ -3,8 +3,8 @@ use crate::error::{
     load_file_error::*,
 };
 use crate::stat::{
-    nginx_stat::NginxStat,
-    stat_factory::{StatFactory, StatType::*},
+    item::item_factory::{ItemFactory, ItemType},
+    NginxStat,
 };
 use regex::Regex;
 use std::{
@@ -43,12 +43,24 @@ impl NginxLogAnalyzer {
         }
     }
 
-    pub fn get_result(&mut self) -> String {
-        self.nginx_stat.get_result()
+    pub fn get_readable_result(&mut self) -> String {
+        let mut tmp = Vec::new();
+        for item in self.nginx_stat.get_results() {
+            tmp.push(item.get_readable_result());
+        }
+        tmp.join("\n==========\n")
+    }
+
+    pub fn get_json_result(&mut self) -> String {
+        let mut tmp = Vec::new();
+        for item in self.nginx_stat.get_results() {
+            tmp.push(item.get_json_result());
+        }
+        let jsons = tmp.join(",");
+        format!("[{}]", jsons)
     }
 
     pub fn debug_print_detail(&self) {
-        // let mut sb = string_builder::Builder::default();
         let mut sb = String::new();
 
         sb.push_str("Titles:\n");
@@ -132,19 +144,19 @@ impl NginxLogAnalyzer {
             match typ {
                 STR_S => {
                     self.nginx_stat
-                        .add_title(StatFactory::create_stat(StrStatType, title));
+                        .add_item(ItemFactory::create_item(ItemType::StrItemType, title));
                 }
                 ISIZE_S => {
                     self.nginx_stat
-                        .add_title(StatFactory::create_stat(IsizeStatType, title));
+                        .add_item(ItemFactory::create_item(ItemType::IsizeItemType, title));
                 }
                 F64_S => {
                     self.nginx_stat
-                        .add_title(StatFactory::create_stat(F64StatType, title));
+                        .add_item(ItemFactory::create_item(ItemType::F64ItemType, title));
                 }
                 NOOP_S => {
                     self.nginx_stat
-                        .add_title(StatFactory::create_stat(NoopStatType, title));
+                        .add_item(ItemFactory::create_item(ItemType::NoopItemType, title));
                 }
                 _ => {
                     panic!("invalid stat type")

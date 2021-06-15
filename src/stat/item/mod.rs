@@ -2,7 +2,7 @@ mod enum_item;
 pub mod item_factory;
 mod noop_item;
 mod num_item;
-mod result;
+pub mod result;
 
 use result::ItemResult;
 
