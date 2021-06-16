@@ -2,6 +2,7 @@ use super::{
     enum_item::StrItem,
     noop_item::NoopItem,
     num_item::{F64Item, IsizeItem},
+    time_hour_item::TimeHourItem,
     Item,
 };
 
@@ -10,6 +11,7 @@ pub enum ItemType {
     IsizeItemType,
     NoopItemType,
     StrItemType,
+    TimeHourItemType,
 }
 
 pub struct ItemFactory {
@@ -22,6 +24,7 @@ impl ItemFactory {
             ItemType::IsizeItemType => Box::new(IsizeItem::new(title)),
             ItemType::NoopItemType => Box::new(NoopItem::new(title)),
             ItemType::StrItemType => Box::new(StrItem::new(title)),
+            ItemType::TimeHourItemType => Box::new(TimeHourItem::new(title)),
         }
     }
 }

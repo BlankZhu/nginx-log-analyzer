@@ -25,6 +25,7 @@ const STR_S: &str = "str";
 const ISIZE_S: &str = "isize";
 const F64_S: &str = "f64";
 const NOOP_S: &str = "noop";
+const THOUR_S: &str = "thour";
 
 pub struct NginxLogAnalyzer {
     nginx_stat: NginxStat, // stores the data processor
@@ -157,6 +158,10 @@ impl NginxLogAnalyzer {
                 NOOP_S => {
                     self.nginx_stat
                         .add_item(ItemFactory::create_item(ItemType::NoopItemType, title));
+                }
+                THOUR_S => {
+                    self.nginx_stat
+                        .add_item(ItemFactory::create_item(ItemType::TimeHourItemType, title));
                 }
                 _ => {
                     panic!("invalid stat type")

@@ -7,7 +7,7 @@ pub struct NginxLogAnalyzerCli {
     #[clap(short, long, default_value = "res/log.fmt", about = "log format file")]
     pub logfmt: String,
 
-    #[clap(short, long, default_value = "res/typ.fmt", about = "type format file")]
+    #[clap(short, long, default_value = "res/type.fmt", about = "type format file")]
     pub typfmt: String,
 
     #[clap(short, long, default_value = "res/access.log", about = "access log file")]
