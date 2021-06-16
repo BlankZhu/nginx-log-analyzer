@@ -4,13 +4,13 @@ use super::ItemResult;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct TimeHourResult {
+pub struct TimeResult {
     title: String,
     count: usize,
     data: HashMap<String, usize>,
 }
 
-impl ItemResult for TimeHourResult {
+impl ItemResult for TimeResult {
     fn get_readable_result(&self) -> String {
         let mut ret = format!("{}\ncount:\t{}\ndetail:\n", self.title, self.count);
         let mut tmp: Vec<String> = Vec::new();
@@ -28,9 +28,9 @@ impl ItemResult for TimeHourResult {
     }
 }
 
-impl TimeHourResult {
-    pub fn new(title: &str, count: usize, data: &HashMap<String, usize>) -> TimeHourResult {
-        TimeHourResult {
+impl TimeResult {
+    pub fn new(title: &str, count: usize, data: &HashMap<String, usize>) -> TimeResult {
+        TimeResult {
             title: title.to_string(),
             count,
             data: data.clone(),
