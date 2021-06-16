@@ -12,7 +12,7 @@ pub enum ItemType {
     NoopItemType,
     StrItemType,
     TimeHourItemType,
-    TimeMinuteType,
+    TimeMinuteItemType,
 }
 
 pub struct ItemFactory {
@@ -26,7 +26,7 @@ impl ItemFactory {
             ItemType::NoopItemType => Box::new(NoopItem::new(title)),
             ItemType::StrItemType => Box::new(StrItem::new(title)),
             ItemType::TimeHourItemType => Box::new(TimeHourItem::new(title)),
-            ItemType::TimeMinuteType => Box::new(TimeMinuteItem::new(title)),
+            ItemType::TimeMinuteItemType => Box::new(TimeMinuteItem::new(title)),
         }
     }
 }

@@ -14,10 +14,9 @@ pub struct TimeHourItem {
 impl Item for TimeHourItem {
     fn add(&mut self, elem: &str) {
         lazy_static! {
-            // static ref RE: Regex = Regex::new(r"(\d{2}/\w{3}/\d{4}:\d{2}:\d{2})").unwrap();
-            static ref RE: Regex = Regex::new(r"(\d{2}/\w{3}/\d{4}:\d{2})").unwrap();
+            static ref RE_HOUR: Regex = Regex::new(r"(\d{2}/\w{3}/\d{4}:\d{2})").unwrap();
         }
-        let cap = RE.captures(elem);
+        let cap = RE_HOUR.captures(elem);
         match cap {
             Some(cap) => {
                 let key: &str = &cap[1];
@@ -68,9 +67,9 @@ pub struct TimeMinuteItem {
 impl Item for TimeMinuteItem {
     fn add(&mut self, elem: &str) {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\d{2}/\w{3}/\d{4}:\d{2}:\d{2})").unwrap();
+            static ref RE_MIN: Regex = Regex::new(r"(\d{2}/\w{3}/\d{4}:\d{2}:\d{2})").unwrap();
         }
-        let cap = RE.captures(elem);
+        let cap = RE_MIN.captures(elem);
         match cap {
             Some(cap) => {
                 let key: &str = &cap[1];
@@ -103,8 +102,8 @@ impl Item for TimeMinuteItem {
 }
 
 impl TimeMinuteItem {
-    pub fn new(title: &str) -> TimeHourItem {
-        TimeHourItem {
+    pub fn new(title: &str) -> TimeMinuteItem {
+        TimeMinuteItem {
             title: title.to_string(),
             count: 0,
             data: HashMap::new(),

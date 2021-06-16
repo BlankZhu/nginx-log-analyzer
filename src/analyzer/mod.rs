@@ -166,7 +166,7 @@ impl NginxLogAnalyzer {
                 }
                 TMIN_S => {
                     self.nginx_stat
-                        .add_item(ItemFactory::create_item(ItemType::TimeMinuteType, title));
+                        .add_item(ItemFactory::create_item(ItemType::TimeMinuteItemType, title));
                 }
                 _ => {
                     panic!("invalid stat type")
