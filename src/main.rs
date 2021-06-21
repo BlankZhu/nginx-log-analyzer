@@ -9,10 +9,6 @@ use cli::NginxLogAnalyzerCli;
 
 fn main() {
     let cli = NginxLogAnalyzerCli::parse();
-    println!(
-        "using log fmt file `{}`, type fmt file `{}`, access log `{}`",
-        cli.logfmt, cli.typfmt, cli.acclog
-    );
 
     let mut analyzer = NginxLogAnalyzer::new();
 
