@@ -191,6 +191,8 @@ The analyzer provides 4 types for data in the access log:
 - `str`, which means the data is in type string.
 - `isize`, which means the data is in integer with sign.
 - `f64`, which means the data is in 64-bit float.
+- `thour`, which means the data is Nginx time_local in hours.
+- `tmin`, which means the data is Nginx time_loacl in minutes.
 
 ## Others
 
