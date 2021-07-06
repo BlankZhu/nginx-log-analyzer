@@ -185,7 +185,7 @@ Which means that you need to `escape` the `log_format` string written in your Ng
 
 ### Use Correct Type
 
-The analyzer provides 4 types for data in the access log:
+The analyzer provides 6 types for data in the access log:
 
 - `noop`, which means skipping the log data.
 - `str`, which means the data is in type string.
@@ -198,4 +198,4 @@ The analyzer provides 4 types for data in the access log:
 
 Feel free to launch any issue or pull request.
 
-Hopt this little tool save you some time.
+Hope this little tool save you some time.
