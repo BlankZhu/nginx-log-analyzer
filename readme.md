@@ -177,7 +177,7 @@ $remote_addr $remote_port [$time_local] $"request" $status $body_bytes_sent "$ht
 And the type format will be like:
 
 ```txt
-str,str,noop,str,str,noop,str,str,isize,noop,noop,str,str,f64,noop,str
+str,str,thour,str,str,noop,str,str,isize,noop,noop,str,str,f64,noop,str
 ```
 
 Which means that you need to `escape` the `log_format` string written in your Nginx config section to the analyzer's log format file. Then, apply types to the fileds correspondly and seperate them by a comma. If you want to ignore some specific fileds, apply `noop` type to them.
