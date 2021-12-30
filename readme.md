@@ -1,6 +1,6 @@
-# Nginx-Log-Analyzer
+# ryna
 
-This repository contains a log analyzer implemented by Rust.
+`ryna` is a Nginx log analyzer implemented by Rust.
 
 This log analyzer aims to provide a quick overview for the statistical data generated from Nginx's access log.
 
