@@ -19,8 +19,8 @@ pub struct F64 {
 
 impl Item for F64 {
     fn add(&mut self, datum: &String) -> Result<(), error::InvalidItemTypeError> {
-        let parse_f64 = datum.parse::<f64>();
-        match parse_f64 {
+        let parsed_f64 = datum.parse::<f64>();
+        match parsed_f64 {
             Ok(value) => {
                 self.total += value;
                 self.count += 1;
@@ -41,7 +41,7 @@ impl Item for F64 {
 
                 Ok(())
             }
-            Err(err) => Err(error::InvalidItemTypeError {
+            Err(_) => Err(error::InvalidItemTypeError {
                 item_title: self.title.clone(),
                 typ: self.typ.clone(),
                 data: datum.clone(),

@@ -1,0 +1,68 @@
+use std::collections::HashMap;
+
+use crate::error;
+
+use super::{Item, Type};
+use lazy_static::lazy_static;
+use regex::Regex;
+use serde::{Deserialize, Serialize};
+
+lazy_static! {
+    static ref RE_MINUTE: Regex = Regex::new(r"(\d{2}/\w{3}/\d{4}:\d{2}:\d{2})").unwrap();
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Minute {
+    title: String,
+    count: usize,
+    map: HashMap<String, usize>,
+
+    #[serde(skip_serializing)]
+    typ: Type,
+}
+
+impl Item for Minute {
+    fn add(&mut self, datum: &String) -> Result<(), crate::error::InvalidItemTypeError> {
+        let cap = RE_MINUTE.captures(datum);
+        match cap {
+            Some(cap) => {
+                let key = &cap[1];
+                if let Some(value) = self.map.get_mut(key) {
+                    *value += 1;
+                } else {
+                    self.map.insert(key.to_string(), 1);
+                }
+                self.count += 1;
+                Ok(())
+            }
+            None => Err(error::InvalidItemTypeError {
+                item_title: self.title.clone(),
+                typ: self.typ.clone(),
+                data: datum.clone(),
+            }),
+        }
+    }
+
+    fn get_count(&self) -> usize {
+        self.count.clone()
+    }
+
+    fn get_title(&self) -> String {
+        self.title.clone()
+    }
+
+    fn get_result(&self) -> String {
+        serde_json::to_string(&self).unwrap()
+    }
+}
+
+impl Minute {
+    pub fn new(title: String) -> Minute {
+        Minute {
+            title,
+            count: 0,
+            map: HashMap::new(),
+            typ: Type::Minute,
+        }
+    }
+}
