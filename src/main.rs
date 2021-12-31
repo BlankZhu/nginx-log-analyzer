@@ -3,7 +3,6 @@ mod config;
 mod error;
 mod item;
 mod option;
-mod result;
 
 use clap::Clap;
 use option::Option;
