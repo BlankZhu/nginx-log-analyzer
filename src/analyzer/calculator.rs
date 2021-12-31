@@ -10,18 +10,18 @@ impl Calculator {
         Calculator { items: Vec::new() }
     }
 
-    pub fn add_item(&mut self, item: Box<dyn Item>) {
+    pub fn register_item(&mut self, item: Box<dyn Item>) {
         self.items.push(item);
     }
 
-    pub fn get_results(&self) -> Vec<String> {
-        let mut ret = Vec::new();
+    pub fn get_titles(&self) -> String {
+        let titles: Vec<String> = self.items.iter().map(|item| item.get_title()).collect();
+        titles.join(",")
+    }
 
-        for item in self.items.iter() {
-            ret.push(item.get_result());
-        }
-
-        ret
+    pub fn get_types(&self) -> String {
+        let types: Vec<String> = self.items.iter().map(|item| item.get_type()).collect();
+        types.join(",")
     }
 
     pub fn add_data(&mut self, data: Vec<String>) -> Result<(), InvalidStatusDataError> {
@@ -55,8 +55,13 @@ impl Calculator {
         Ok(())
     }
 
-    pub fn get_titles(&self) -> String {
-        let titles: Vec<String> = self.items.iter().map(|item| item.get_title()).collect();
-        titles.join(",")
+    pub fn get_results(&self) -> Vec<String> {
+        let mut ret = Vec::new();
+
+        for item in self.items.iter() {
+            ret.push(item.get_result());
+        }
+
+        ret
     }
 }

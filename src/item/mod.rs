@@ -29,6 +29,7 @@ pub trait Item {
     fn add(&mut self, datum: &String) -> Result<(), error::InvalidItemTypeError>;
     fn get_count(&self) -> usize;
     fn get_title(&self) -> String;
+    fn get_type(&self) -> String;
     fn get_result(&self) -> String;
 }
 

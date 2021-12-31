@@ -10,7 +10,7 @@ pub struct Str {
     map: HashMap<String, usize>,
 
     #[serde(skip_serializing)]
-    _typ: Type,
+    typ: Type,
 }
 
 impl Item for Str {
@@ -36,6 +36,10 @@ impl Item for Str {
     fn get_result(&self) -> String {
         serde_json::to_string(&self).unwrap()
     }
+
+    fn get_type(&self) -> String {
+        format!("{:?}", self.typ)
+    }
 }
 
 impl Str {
@@ -44,7 +48,7 @@ impl Str {
             title,
             count: 0,
             map: HashMap::new(),
-            _typ: Type::Str,
+            typ: Type::Str,
         }
     }
 }

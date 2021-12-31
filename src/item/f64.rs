@@ -60,6 +60,10 @@ impl Item for F64 {
     fn get_result(&self) -> String {
         serde_json::to_string_pretty(&self).unwrap()
     }
+
+    fn get_type(&self) -> String {
+        format!("{:?}", self.typ)
+    }
 }
 
 impl F64 {

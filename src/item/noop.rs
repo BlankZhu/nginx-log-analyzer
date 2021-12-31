@@ -7,7 +7,7 @@ pub struct Noop {
     count: usize,
 
     #[serde(skip_serializing)]
-    _typ: Type,
+    typ: Type,
 }
 
 impl Item for Noop {
@@ -27,6 +27,10 @@ impl Item for Noop {
     fn get_result(&self) -> String {
         serde_json::to_string_pretty(&self).unwrap()
     }
+
+    fn get_type(&self) -> String {
+        format!("{:?}", self.typ)
+    }
 }
 
 impl Noop {
@@ -34,7 +38,7 @@ impl Noop {
         Noop {
             title,
             count: 0,
-            _typ: Type::Noop,
+            typ: Type::Noop,
         }
     }
 }

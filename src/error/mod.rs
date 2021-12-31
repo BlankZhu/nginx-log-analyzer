@@ -1,10 +1,8 @@
 use crate::item;
 
-pub trait ErrorStack {}
-
-// LogFormatError tells if log format doesn't fit log types in config files
+// LogConfigError tells if log format doesn't fit log types in config files
 #[derive(Debug)]
-pub struct LogFormatError;
+pub struct LogConfigError;
 
 // LoadAccessLogError tells if any error while opening nginx's access log file content
 #[derive(Debug)]

@@ -54,6 +54,10 @@ impl Item for Minute {
     fn get_result(&self) -> String {
         serde_json::to_string(&self).unwrap()
     }
+
+    fn get_type(&self) -> String {
+        format!("{:?}", self.typ)
+    }
 }
 
 impl Minute {

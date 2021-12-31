@@ -1,5 +1,5 @@
 mod analyzer;
-mod config;
+pub mod config;
 mod error;
 mod item;
 mod option;
