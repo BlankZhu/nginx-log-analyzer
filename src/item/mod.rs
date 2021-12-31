@@ -8,6 +8,13 @@ mod str;
 use crate::error;
 use serde::{Deserialize, Serialize};
 
+use self::f64::F64;
+use self::hour::Hour;
+use self::isize::Isize;
+use self::minute::Minute;
+use self::noop::Noop;
+use self::str::Str;
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum Type {
     F64,
@@ -29,7 +36,14 @@ pub struct Factory;
 
 impl Factory {
     pub fn create_item(typ: Type, title: String) -> Box<dyn Item> {
-        todo!()
+        match typ {
+            Type::F64 => Box::new(F64::new(title)),
+            Type::Hour => Box::new(Hour::new(title)),
+            Type::Isize => Box::new(Isize::new(title)),
+            Type::Minute => Box::new(Minute::new(title)),
+            Type::Noop => Box::new(Noop::new(title)),
+            Type::Str => Box::new(Str::new(title)),
+        }
     }
 }
 
