@@ -36,7 +36,11 @@ pub trait Item {
 pub struct Factory;
 
 impl Factory {
-    pub fn create_item(typ: Type, title: String) -> Box<dyn Item> {
+    pub fn new() -> Factory {
+        Factory {}
+    }
+
+    pub fn create_item(&self, typ: Type, title: String) -> Box<dyn Item> {
         match typ {
             Type::F64 => Box::new(F64::new(title)),
             Type::Hour => Box::new(Hour::new(title)),
