@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::error::InvalidStatusDataError;
 use crate::item::Item;
 
@@ -55,13 +57,11 @@ impl Calculator {
         Ok(())
     }
 
-    pub fn get_results(&self) -> Vec<String> {
-        let mut ret = Vec::new();
-
+    pub fn get_results(&self) -> HashMap<String, String> {
+        let mut ret = HashMap::new();
         for item in self.items.iter() {
-            ret.push(item.get_result());
+            ret.insert(item.get_title(), item.get_result());
         }
-
         ret
     }
 }

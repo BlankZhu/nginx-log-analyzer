@@ -107,17 +107,28 @@ impl Analyzer {
         let scanner = io::BufReader::new(file).lines();
         for line in scanner {
             match line {
-                Ok(l) => {
-                    let data = self.parse_access_log_line(l);
-                    match data {
-                        Ok(d) => {}
-                        Err(e) => {
-                            eprintln!("{}", e);
+                Ok(l) => match self.parse_access_log_line(l) {
+                    Ok(data) => match self.calculator.add_data(data) {
+                        Ok(_) => {}
+                        Err(err) => {
+                            return Err(error::LoadAccessLogError {
+                                detail: format!("{}", err),
+                                filename: self.access_log_filename.clone(),
+                            });
                         }
+                    },
+                    Err(err) => {
+                        return Err(error::LoadAccessLogError {
+                            detail: format!("{}", err),
+                            filename: self.access_log_filename.clone(),
+                        });
                     }
-                }
+                },
                 Err(err) => {
-                    eprintln!("{}", err);
+                    return Err(error::LoadAccessLogError {
+                        detail: format!("{}", err),
+                        filename: self.access_log_filename.clone(),
+                    });
                 }
             }
         }
@@ -126,7 +137,9 @@ impl Analyzer {
     }
 
     pub fn get_result(&self) -> String {
-        todo!()
+        let res = self.calculator.get_results();
+        let serialized = serde_json::to_string(&res).unwrap();
+        serialized
     }
 
     pub fn debug_print_detail(&self) {
