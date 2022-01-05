@@ -79,7 +79,15 @@ impl Analyzer {
         self.log_title_width = titles.len();
 
         // generate access log extract regex
-        self.extract_regex = self.generate_extract_regex(&config.log_format, &titles);
+        let extracted = self.generate_extract_regex(&config.log_format, &titles);
+        match extracted {
+            Ok(e) => self.extract_regex = e,
+            Err(e) => {
+                return Err(error::LogConfigError {
+                    detail: format!("{}", e),
+                });
+            }
+        }
 
         Ok(())
     }
@@ -104,12 +112,12 @@ impl Analyzer {
                     match data {
                         Ok(d) => {}
                         Err(e) => {
-                            eprintln!("invalid line, detail: {:?}", e); // todo: add trait fmt::Display for errors
+                            eprintln!("{}", e);
                         }
                     }
                 }
                 Err(err) => {
-                    eprintln!("failed to read line, detail: {}", err);
+                    eprintln!("{}", err);
                 }
             }
         }
@@ -194,7 +202,11 @@ impl Analyzer {
         ret
     }
 
-    fn generate_extract_regex(&self, nginx_log_format: &String, titles: &Vec<String>) -> Regex {
+    fn generate_extract_regex(
+        &self,
+        nginx_log_format: &String,
+        titles: &Vec<String>,
+    ) -> Result<Regex, error::ExtractRegexError> {
         let mut to_search = &nginx_log_format[..];
         let mut re = String::from("^");
 
@@ -218,7 +230,7 @@ impl Analyzer {
                 to_search = &to_search[(found + title.len())..];
                 re.push_str("(.+?)");
             } else {
-                eprintln!("failed to find {} in {}", title, to_search);
+                return Err(error::ExtractRegexError {});
             }
         }
 
@@ -228,7 +240,14 @@ impl Analyzer {
         }
         re.push_str("$");
 
-        return Regex::new(re.as_str()).unwrap();
+        // return Regex::new(re.as_str()).unwrap();
+        let ret = match Regex::new(re.as_str()) {
+            Ok(r) => r,
+            Err(e) => {
+                return Err(error::ExtractRegexError {});
+            }
+        };
+        Ok(ret)
     }
 
     fn parse_access_log_line(

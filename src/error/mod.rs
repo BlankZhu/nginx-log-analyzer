@@ -25,6 +25,15 @@ impl fmt::Display for InvalidLogTypeError {
     }
 }
 
+#[derive(Debug)]
+pub struct ExtractRegexError {}
+
+impl fmt::Display for ExtractRegexError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "ExtractRegexError: cannot extract regex from log_format")
+    }
+}
+
 // InvalidLogTypeError tells if log line doesn't fit the registered log format
 #[derive(Debug)]
 pub struct InvalidLogLineError {
