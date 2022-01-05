@@ -42,11 +42,11 @@ impl Calculator {
             match add_res {
                 Ok(_) => {}
                 Err(err) => {
-                    let detail = format!(
+                    eprintln!(
                         "given data({}) doesn't fit the item {}({:?})",
                         err.data, err.item_title, err.typ
                     );
-                    return Err(InvalidStatusDataError { detail });
+                    continue;
                 }
             }
 
