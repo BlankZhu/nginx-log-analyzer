@@ -18,7 +18,7 @@ pub struct F64 {
 }
 
 impl Item for F64 {
-    fn add(&mut self, datum: &String) -> Result<(), error::InvalidItemTypeError> {
+    fn add(&mut self, datum: &String) -> Result<(), error::InvalidItemDataError> {
         let parsed_f64 = datum.parse::<f64>();
         match parsed_f64 {
             Ok(value) => {
@@ -41,7 +41,7 @@ impl Item for F64 {
 
                 Ok(())
             }
-            Err(_) => Err(error::InvalidItemTypeError {
+            Err(_) => Err(error::InvalidItemDataError {
                 item_title: self.title.clone(),
                 typ: self.typ.clone(),
                 data: datum.clone(),

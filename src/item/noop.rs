@@ -11,7 +11,7 @@ pub struct Noop {
 }
 
 impl Item for Noop {
-    fn add(&mut self, _: &String) -> Result<(), crate::error::InvalidItemTypeError> {
+    fn add(&mut self, _: &String) -> Result<(), crate::error::InvalidItemDataError> {
         self.count += 1;
         Ok(())
     }

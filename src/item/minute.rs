@@ -22,7 +22,7 @@ pub struct Minute {
 }
 
 impl Item for Minute {
-    fn add(&mut self, datum: &String) -> Result<(), crate::error::InvalidItemTypeError> {
+    fn add(&mut self, datum: &String) -> Result<(), crate::error::InvalidItemDataError> {
         let cap = RE_MINUTE.captures(datum);
         match cap {
             Some(cap) => {
@@ -35,7 +35,7 @@ impl Item for Minute {
                 self.count += 1;
                 Ok(())
             }
-            None => Err(error::InvalidItemTypeError {
+            None => Err(error::InvalidItemDataError {
                 item_title: self.title.clone(),
                 typ: self.typ.clone(),
                 data: datum.clone(),

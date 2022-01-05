@@ -18,7 +18,7 @@ pub struct Isize {
 }
 
 impl Item for Isize {
-    fn add(&mut self, datum: &String) -> Result<(), error::InvalidItemTypeError> {
+    fn add(&mut self, datum: &String) -> Result<(), error::InvalidItemDataError> {
         let parsed_isize = datum.parse::<isize>();
         match parsed_isize {
             Ok(value) => {
@@ -41,7 +41,7 @@ impl Item for Isize {
 
                 Ok(())
             }
-            Err(_) => Err(error::InvalidItemTypeError {
+            Err(_) => Err(error::InvalidItemDataError {
                 item_title: self.title.clone(),
                 typ: self.typ.clone(),
                 data: datum.clone(),

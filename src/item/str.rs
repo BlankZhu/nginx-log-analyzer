@@ -14,7 +14,7 @@ pub struct Str {
 }
 
 impl Item for Str {
-    fn add(&mut self, datum: &String) -> Result<(), crate::error::InvalidItemTypeError> {
+    fn add(&mut self, datum: &String) -> Result<(), crate::error::InvalidItemDataError> {
         if let Some(value) = self.map.get_mut(datum) {
             *value += 1;
         } else {
