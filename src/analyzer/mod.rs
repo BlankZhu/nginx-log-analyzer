@@ -156,6 +156,8 @@ impl Analyzer {
         sb.push_str("Extract regex: ");
         sb.push_str(&self.extract_regex.to_string());
         sb.push_str("\n");
+
+        println!("{}", sb);
     }
 
     fn parse_titles(&self, log_format: &String) -> Vec<String> {

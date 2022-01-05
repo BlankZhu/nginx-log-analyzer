@@ -28,9 +28,14 @@ impl Calculator {
 
     pub fn add_data(&mut self, data: Vec<String>) -> Result<(), InvalidStatusDataError> {
         if data.len() != self.items.len() {
-            // todo: more info
+            // let detail = format!(
+            //     "given data's length({}) doesn't fit items length({})",
+            //     data.len(),
+            //     self.items.len()
+            // );
             let detail = format!(
-                "given data' length({}) doesn't fit items length({})",
+                "given data `{:?}`({}) doesn't fit items length({})",
+                &data,
                 data.len(),
                 self.items.len()
             );

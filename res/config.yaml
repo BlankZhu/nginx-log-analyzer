@@ -6,7 +6,7 @@ log_format: >
 log_types:
   - str
   - noop
-  - tmin
+  - min
   - str
   - str
   - noop
