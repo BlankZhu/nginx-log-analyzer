@@ -256,7 +256,7 @@ impl Analyzer {
         // return Regex::new(re.as_str()).unwrap();
         let ret = match Regex::new(re.as_str()) {
             Ok(r) => r,
-            Err(e) => {
+            Err(_) => {
                 return Err(error::ExtractRegexError {});
             }
         };
