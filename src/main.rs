@@ -20,7 +20,7 @@ fn main() {
     };
 
     // debug
-    println!("log_format: `{}`", conf.log_format);
+    // println!("log_format: `{}`", conf.log_format);
 
     let mut analyzer = Analyzer::new();
     match analyzer.register_config(conf) {
@@ -30,8 +30,10 @@ fn main() {
             return;
         }
     }
+
     // debug
-    analyzer.debug_print_detail();
+    // analyzer.debug_print_detail();
+
     match analyzer.start() {
         Ok(_) => {}
         Err(err) => {

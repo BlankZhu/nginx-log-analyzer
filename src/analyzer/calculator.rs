@@ -56,10 +56,10 @@ impl Calculator {
         Ok(())
     }
 
-    pub fn get_results(&self) -> HashMap<String, String> {
+    pub fn get_results(&self) -> HashMap<String, &Box<dyn Item>> {
         let mut ret = HashMap::new();
         for item in self.items.iter() {
-            ret.insert(item.get_title(), item.get_result());
+            ret.insert(item.get_title(), item);
         }
         ret
     }

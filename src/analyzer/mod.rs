@@ -138,8 +138,13 @@ impl Analyzer {
 
     pub fn get_result(&self) -> String {
         let res = self.calculator.get_results();
-        let serialized = serde_json::to_string(&res).unwrap();
-        serialized
+        let mut tmp = Vec::new();
+
+        for (_, item) in res {
+            tmp.push(item.get_result());
+        }
+
+        format!("[{}]", tmp.join(","))
     }
 
     pub fn debug_print_detail(&self) {
