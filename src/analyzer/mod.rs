@@ -145,17 +145,17 @@ impl Analyzer {
     pub fn debug_print_detail(&self) {
         let mut sb = String::new();
 
-        sb.push_str("Titles:\n");
+        sb.push_str("Titles:\n`");
         sb.push_str(&self.calculator.get_titles());
-        sb.push_str("\n");
+        sb.push_str("`\n");
 
-        sb.push_str("Types:\n");
+        sb.push_str("Types:`\n");
         sb.push_str(&self.calculator.get_types());
-        sb.push_str("\n");
+        sb.push_str("`\n");
 
-        sb.push_str("Extract regex: ");
+        sb.push_str("Extract regex: `");
         sb.push_str(&self.extract_regex.to_string());
-        sb.push_str("\n");
+        sb.push_str("`\n");
 
         println!("{}", sb);
     }
@@ -205,6 +205,7 @@ impl Analyzer {
     fn trim_nginx_log_format_str(&self, nginx_log_format: &String) -> String {
         let mut lf = nginx_log_format.clone();
         lf = lf.replace("\n", "");
+        lf = lf.replace("\r", "");
         lf = lf.replace("'", "");
         lf
     }
