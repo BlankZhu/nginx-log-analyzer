@@ -38,9 +38,13 @@ impl Analyzer {
         }
     }
 
-    pub fn register_config(&mut self, config: Config) -> Result<(), error::LogConfigError> {
+    pub fn register_config(
+        &mut self,
+        config: Config,
+        access_log_filename: String,
+    ) -> Result<(), error::LogConfigError> {
         // set access log filename
-        self.access_log_filename = config.access_log;
+        self.access_log_filename = access_log_filename;
 
         // parse log_format into titles
         let titles = self.parse_titles(&config.log_format);

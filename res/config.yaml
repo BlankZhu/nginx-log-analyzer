@@ -1,4 +1,3 @@
-access_log: res/access.log
 log_format: "$remote_addr	$remote_port	[$time_local]	\
   $request_method	$uri	$args	\
   $server_protocol	$status	$body_bytes_sent	\

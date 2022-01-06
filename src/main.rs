@@ -23,7 +23,7 @@ fn main() {
     // println!("log_format: `{}`", conf.log_format);
 
     let mut analyzer = Analyzer::new();
-    match analyzer.register_config(conf) {
+    match analyzer.register_config(conf, cli.access_log_filename) {
         Ok(_) => {}
         Err(err) => {
             eprintln!("failed to apply config, detail: {}", err);
