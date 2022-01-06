@@ -1,38 +1,47 @@
 mod analyzer;
-mod cli;
+mod config;
 mod error;
-mod stat;
+mod item;
+mod option;
 
-use analyzer::NginxLogAnalyzer;
+use analyzer::Analyzer;
 use clap::Clap;
-use cli::NginxLogAnalyzerCli;
+use config::Config;
+use option::Option;
 
 fn main() {
-    let cli = NginxLogAnalyzerCli::parse();
-
-    let mut analyzer = NginxLogAnalyzer::new();
-
-    let apply_result = analyzer.apply_log_format_files(&cli.logfmt, &cli.typfmt);
-    match apply_result {
-        Ok(()) => {}
+    let cli = Option::parse();
+    let conf = match Config::load_from_yaml_file(&cli.config_filename) {
+        Ok(c) => c,
         Err(err) => {
-            println!("failed to load file, detail: {}", err);
+            eprintln!("load config error, detail: {}", err);
+            return;
+        }
+    };
+
+    // debug
+    // println!("log_format: `{}`", conf.log_format);
+
+    let mut analyzer = Analyzer::new();
+    match analyzer.register_config(conf, cli.access_log_filename) {
+        Ok(_) => {}
+        Err(err) => {
+            eprintln!("failed to apply config, detail: {}", err);
             return;
         }
     }
 
-    let analyze_result = analyzer.apply_access_log_file(&cli.acclog);
-    match analyze_result {
-        Ok(()) => {}
+    // debug
+    // analyzer.debug_print_detail();
+
+    match analyzer.start() {
+        Ok(_) => {}
         Err(err) => {
-            println!("failed to analyze access log, detail: {}", err);
+            eprintln!("failed to load access log, detail: {}", err);
             return;
         }
     }
+    println!("{}", analyzer.get_result());
 
-    if cli.json {
-        println!("{}", analyzer.get_json_result());
-    } else {
-        println!("{}", analyzer.get_readable_result());
-    }
+    return;
 }

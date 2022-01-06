@@ -1,0 +1,22 @@
+log_format: "$remote_addr	$remote_port	[$time_local]	\
+  $request_method	$uri	$args	\
+  $server_protocol	$status	$body_bytes_sent	\
+  \"$http_referer\"	\"$my_trans_id\"	\"$my_http_header_field\"	\
+  $upstream_addr	$upstream_response_time	$request_time	$server_name"
+log_types:
+  - str
+  - noop
+  - min
+  - str
+  - str
+  - noop
+  - str
+  - str
+  - isize
+  - noop
+  - noop
+  - str
+  - str
+  - f64
+  - noop
+  - str
