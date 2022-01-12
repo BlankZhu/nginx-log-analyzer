@@ -265,14 +265,7 @@ impl Analyzer {
         }
         re.push_str("$");
 
-        // return Regex::new(re.as_str()).unwrap();
-        let ret = match Regex::new(re.as_str()) {
-            Ok(r) => r,
-            Err(_) => {
-                return Err(error::ExtractRegexError {});
-            }
-        };
-        Ok(ret)
+        return Regex::new(re.as_str()).map_err(|_| error::ExtractRegexError {});
     }
 
     fn parse_access_log_line(
