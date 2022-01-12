@@ -23,23 +23,16 @@ fn main() {
     // println!("log_format: `{}`", conf.log_format);
 
     let mut analyzer = Analyzer::new();
-    match analyzer.register_config(conf, cli.access_log_filename) {
-        Ok(_) => {}
-        Err(err) => {
-            eprintln!("failed to apply config, detail: {}", err);
-            return;
-        }
+    if let Err(err) = analyzer.register_config(conf, cli.access_log_filename) {
+        eprintln!("failed to apply config, detail: {}", err);
+        return;
     }
 
     // debug
     // analyzer.debug_print_detail();
-
-    match analyzer.start() {
-        Ok(_) => {}
-        Err(err) => {
-            eprintln!("failed to load access log, detail: {}", err);
-            return;
-        }
+    if let Err(err) = analyzer.start() {
+        eprintln!("failed to load access log, detail: {}", err);
+        return;
     }
     println!("{}", analyzer.get_result());
 
