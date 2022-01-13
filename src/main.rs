@@ -4,12 +4,12 @@ mod error;
 mod item;
 mod option;
 
-use std::error::Error;
-
 use analyzer::Analyzer;
 use clap::Clap;
 use config::Config;
+use log::error;
 use option::Option;
+use std::error::Error;
 
 fn run() -> Result<(), Box<dyn Error>> {
     let cli = Option::parse();
@@ -30,7 +30,9 @@ fn run() -> Result<(), Box<dyn Error>> {
 }
 
 fn main() {
+    env_logger::init();
+
     if let Err(err) = run() {
-        eprintln!("[ryna failed], detail: {}", &err)
+        error!("ryna failed, detail: {}", &err)
     }
 }

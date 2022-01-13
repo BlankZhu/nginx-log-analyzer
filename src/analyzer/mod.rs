@@ -1,14 +1,14 @@
 mod calculator;
 
+use self::calculator::Calculator;
+use crate::{config::Config, error, item};
+use lazy_static::lazy_static;
+use log::debug;
+use regex::Regex;
 use std::{
     fs::File,
     io::{self, BufRead},
 };
-
-use self::calculator::Calculator;
-use crate::{config::Config, error, item};
-use lazy_static::lazy_static;
-use regex::Regex;
 
 const STR: &str = "str";
 const ISIZE: &str = "isize";
@@ -166,7 +166,7 @@ impl Analyzer {
         sb.push_str(&self.extract_regex.to_string());
         sb.push_str("`\n");
 
-        println!("{}", sb);
+        debug!("{}", sb);
     }
 
     fn parse_titles(&self, log_format: &String) -> Vec<String> {
@@ -239,7 +239,7 @@ impl Analyzer {
         if let Some(first) = titles.first() {
             if let Some(first_pos) = to_search.find(first) {
                 if first_pos != 0 {
-                    println!("prefix exist");
+                    debug!("prefix exist");
                     // prefix exist
                     re.push_str(&to_search[0..first_pos].to_string());
                     to_search = &to_search[first_pos..];
