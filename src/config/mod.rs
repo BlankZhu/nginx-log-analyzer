@@ -1,4 +1,8 @@
+use std::fmt::format;
+
 use serde::{Deserialize, Serialize};
+
+use crate::error::LoadYamlConfigError;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -8,9 +12,17 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load_from_yaml_file(filename: &String) -> Result<Config, Box<dyn std::error::Error>> {
-        let f = std::fs::File::open(filename)?;
-        let d: Config = serde_yaml::from_reader(f)?;
-        Ok(d)
+    pub fn load_from_yaml_file(filename: &String) -> Result<Config, LoadYamlConfigError> {
+        std::fs::File::open(filename)
+            .map_err(|err| LoadYamlConfigError {
+                filename: filename.clone(),
+                detail: format!("{}", err),
+            })
+            .and_then(|file| {
+                serde_yaml::from_reader(file).map_err(|err| LoadYamlConfigError {
+                    filename: filename.clone(),
+                    detail: format!("{}", err),
+                })
+            })
     }
 }

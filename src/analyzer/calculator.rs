@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-
 use crate::error::InvalidStatusDataError;
 use crate::item::Item;
+use log::error;
+use std::collections::HashMap;
 
 pub struct Calculator {
     items: Vec<Box<dyn Item>>,
@@ -38,16 +38,12 @@ impl Calculator {
 
         let mut index: usize = 0;
         for datum in data.iter() {
-            let add_res = self.items[index].add(datum);
-            match add_res {
-                Ok(_) => {}
-                Err(err) => {
-                    eprintln!(
-                        "given data({}) doesn't fit the item {}({:?})",
-                        err.data, err.item_title, err.typ
-                    );
-                    continue;
-                }
+            if let Err(err) = self.items[index].add(datum) {
+                error!(
+                    "given data({}) doesn't fit the item {}({:?})",
+                    err.data, err.item_title, err.typ
+                );
+                continue;
             }
 
             index += 1;

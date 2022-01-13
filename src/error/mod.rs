@@ -1,5 +1,5 @@
 use crate::item;
-use std::fmt;
+use std::{error, fmt};
 
 // LogConfigError tells if log format doesn't fit log types in config files
 #[derive(Debug)]
@@ -13,6 +13,8 @@ impl fmt::Display for LogConfigError {
     }
 }
 
+impl error::Error for LogConfigError {}
+
 // InvalidLogTypeError tells if log_types meets invalid string
 #[derive(Debug)]
 pub struct InvalidLogTypeError {
@@ -25,6 +27,8 @@ impl fmt::Display for InvalidLogTypeError {
     }
 }
 
+impl error::Error for InvalidLogTypeError {}
+
 #[derive(Debug)]
 pub struct ExtractRegexError {}
 
@@ -33,6 +37,8 @@ impl fmt::Display for ExtractRegexError {
         write!(f, "ExtractRegexError: cannot extract regex from log_format")
     }
 }
+
+impl error::Error for ExtractRegexError {}
 
 // InvalidLogTypeError tells if log line doesn't fit the registered log format
 #[derive(Debug)]
@@ -49,6 +55,8 @@ impl fmt::Display for InvalidLogLineError {
         )
     }
 }
+
+impl error::Error for InvalidLogLineError {}
 
 // LoadAccessLogError tells if any error while opening nginx's access log file content
 #[derive(Debug)]
@@ -67,6 +75,26 @@ impl fmt::Display for LoadAccessLogError {
     }
 }
 
+impl error::Error for LoadAccessLogError {}
+
+#[derive(Debug)]
+pub struct LoadYamlConfigError {
+    pub filename: String,
+    pub detail: String,
+}
+
+impl fmt::Display for LoadYamlConfigError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "LoadYamlConfigError: cannot load `{}`, detail: {}",
+            self.filename, self.detail
+        )
+    }
+}
+
+impl error::Error for LoadYamlConfigError {}
+
 // InvalidStatusDataError covers InvalidItemDataError
 // InvalidStatusDataError tells possible errors while adding access logs'
 // elems to statistics
@@ -80,6 +108,8 @@ impl fmt::Display for InvalidStatusDataError {
         write!(f, "InvalidStatusDataError: {}", self.detail)
     }
 }
+
+impl error::Error for InvalidStatusDataError {}
 
 #[derive(Debug)]
 pub struct InvalidItemDataError {
@@ -97,3 +127,5 @@ impl fmt::Display for InvalidItemDataError {
         )
     }
 }
+
+impl error::Error for InvalidItemDataError {}

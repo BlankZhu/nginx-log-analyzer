@@ -1,14 +1,14 @@
 mod calculator;
 
+use self::calculator::Calculator;
+use crate::{config::Config, error, item};
+use lazy_static::lazy_static;
+use log::debug;
+use regex::Regex;
 use std::{
     fs::File,
     io::{self, BufRead},
 };
-
-use self::calculator::Calculator;
-use crate::{config::Config, error, item};
-use lazy_static::lazy_static;
-use regex::Regex;
 
 const STR: &str = "str";
 const ISIZE: &str = "isize";
@@ -83,61 +83,52 @@ impl Analyzer {
         self.log_title_width = titles.len();
 
         // generate access log extract regex
-        let extracted = self.generate_extract_regex(&config.log_format, &titles);
-        match extracted {
-            Ok(e) => self.extract_regex = e,
-            Err(e) => {
-                return Err(error::LogConfigError {
-                    detail: format!("{}", e),
-                });
-            }
-        }
-
-        Ok(())
+        self.generate_extract_regex(&config.log_format, &titles)
+            .map_err(|err| error::LogConfigError {
+                detail: format!("{}", err),
+            })
+            .and_then(|r| {
+                self.extract_regex = r;
+                Ok(())
+            })
     }
 
     pub fn start(&mut self) -> Result<(), error::LoadAccessLogError> {
-        let file = File::open(self.access_log_filename.clone());
-        let file = match file {
-            Ok(f) => f,
-            Err(err) => {
-                return Err(error::LoadAccessLogError {
-                    filename: self.access_log_filename.clone(),
-                    detail: format!("{}", &err),
-                });
-            }
-        };
-
-        let scanner = io::BufReader::new(file).lines();
-        for line in scanner {
-            match line {
-                Ok(l) => match self.parse_access_log_line(l) {
-                    Ok(data) => match self.calculator.add_data(data) {
-                        Ok(_) => {}
-                        Err(err) => {
-                            return Err(error::LoadAccessLogError {
-                                detail: format!("{}", err),
-                                filename: self.access_log_filename.clone(),
-                            });
-                        }
-                    },
-                    Err(err) => {
-                        return Err(error::LoadAccessLogError {
+        File::open(self.access_log_filename.clone())
+            .map_err(|err| error::LoadAccessLogError {
+                filename: self.access_log_filename.clone(),
+                detail: format!("{}", &err),
+            })
+            .and_then(|file| {
+                let scanner = io::BufReader::new(file).lines();
+                for line in scanner {
+                    if let Err(e) = line
+                        .map_err(|err| error::LoadAccessLogError {
                             detail: format!("{}", err),
                             filename: self.access_log_filename.clone(),
-                        });
+                        })
+                        .and_then(|line| {
+                            self.parse_access_log_line(line)
+                                .map_err(|err| error::LoadAccessLogError {
+                                    detail: format!("{}", err),
+                                    filename: self.access_log_filename.clone(),
+                                })
+                                .and_then(|data| {
+                                    self.calculator
+                                        .add_data(data)
+                                        .map_err(|err| error::LoadAccessLogError {
+                                            detail: format!("{}", err),
+                                            filename: self.access_log_filename.clone(),
+                                        })
+                                        .and_then(|_| Ok(()))
+                                })
+                        })
+                    {
+                        return Err(e);
                     }
-                },
-                Err(err) => {
-                    return Err(error::LoadAccessLogError {
-                        detail: format!("{}", err),
-                        filename: self.access_log_filename.clone(),
-                    });
                 }
-            }
-        }
-
-        Ok(())
+                Ok(())
+            })
     }
 
     pub fn get_result(&self) -> String {
@@ -166,7 +157,7 @@ impl Analyzer {
         sb.push_str(&self.extract_regex.to_string());
         sb.push_str("`\n");
 
-        println!("{}", sb);
+        debug!("{}", sb);
     }
 
     fn parse_titles(&self, log_format: &String) -> Vec<String> {
@@ -239,7 +230,7 @@ impl Analyzer {
         if let Some(first) = titles.first() {
             if let Some(first_pos) = to_search.find(first) {
                 if first_pos != 0 {
-                    println!("prefix exist");
+                    debug!("prefix exist");
                     // prefix exist
                     re.push_str(&to_search[0..first_pos].to_string());
                     to_search = &to_search[first_pos..];
@@ -265,14 +256,7 @@ impl Analyzer {
         }
         re.push_str("$");
 
-        // return Regex::new(re.as_str()).unwrap();
-        let ret = match Regex::new(re.as_str()) {
-            Ok(r) => r,
-            Err(_) => {
-                return Err(error::ExtractRegexError {});
-            }
-        };
-        Ok(ret)
+        return Regex::new(re.as_str()).map_err(|_| error::ExtractRegexError {});
     }
 
     fn parse_access_log_line(
