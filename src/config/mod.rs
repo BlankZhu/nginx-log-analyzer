@@ -1,8 +1,5 @@
-use std::fmt::format;
-
-use serde::{Deserialize, Serialize};
-
 use crate::error::LoadYamlConfigError;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
