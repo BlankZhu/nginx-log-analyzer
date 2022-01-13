@@ -4,37 +4,33 @@ mod error;
 mod item;
 mod option;
 
+use std::error::Error;
+
 use analyzer::Analyzer;
 use clap::Clap;
 use config::Config;
 use option::Option;
 
-fn main() {
+fn run() -> Result<(), Box<dyn Error>> {
     let cli = Option::parse();
-    let conf = match Config::load_from_yaml_file(&cli.config_filename) {
-        Ok(c) => c,
-        Err(err) => {
-            eprintln!("load config error, detail: {}", err);
-            return;
-        }
-    };
+    Config::load_from_yaml_file(&cli.config_filename)
+        .map_err(|err| Into::<Box<dyn Error>>::into(err))
+        .and_then(|config| {
+            let mut analyzer = Analyzer::new();
+            analyzer
+                .register_config(config, cli.access_log_filename)
+                .map_err(|err| Into::<Box<dyn Error>>::into(err))
+                .and_then(|_| {
+                    analyzer
+                        .start()
+                        .map_err(|err| Into::<Box<dyn Error>>::into(err))
+                        .map(|_| println!("{}", analyzer.get_result()))
+                })
+        })
+}
 
-    // debug
-    // println!("log_format: `{}`", conf.log_format);
-
-    let mut analyzer = Analyzer::new();
-    if let Err(err) = analyzer.register_config(conf, cli.access_log_filename) {
-        eprintln!("failed to apply config, detail: {}", err);
-        return;
+fn main() {
+    if let Err(err) = run() {
+        eprintln!("[ryna failed], detail: {}", &err)
     }
-
-    // debug
-    // analyzer.debug_print_detail();
-    if let Err(err) = analyzer.start() {
-        eprintln!("failed to load access log, detail: {}", err);
-        return;
-    }
-    println!("{}", analyzer.get_result());
-
-    return;
 }
