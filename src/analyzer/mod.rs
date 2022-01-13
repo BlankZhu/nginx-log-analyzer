@@ -83,61 +83,52 @@ impl Analyzer {
         self.log_title_width = titles.len();
 
         // generate access log extract regex
-        let extracted = self.generate_extract_regex(&config.log_format, &titles);
-        match extracted {
-            Ok(e) => self.extract_regex = e,
-            Err(e) => {
-                return Err(error::LogConfigError {
-                    detail: format!("{}", e),
-                });
-            }
-        }
-
-        Ok(())
+        self.generate_extract_regex(&config.log_format, &titles)
+            .map_err(|err| error::LogConfigError {
+                detail: format!("{}", err),
+            })
+            .and_then(|r| {
+                self.extract_regex = r;
+                Ok(())
+            })
     }
 
     pub fn start(&mut self) -> Result<(), error::LoadAccessLogError> {
-        let file = File::open(self.access_log_filename.clone());
-        let file = match file {
-            Ok(f) => f,
-            Err(err) => {
-                return Err(error::LoadAccessLogError {
-                    filename: self.access_log_filename.clone(),
-                    detail: format!("{}", &err),
-                });
-            }
-        };
-
-        let scanner = io::BufReader::new(file).lines();
-        for line in scanner {
-            match line {
-                Ok(l) => match self.parse_access_log_line(l) {
-                    Ok(data) => match self.calculator.add_data(data) {
-                        Ok(_) => {}
-                        Err(err) => {
-                            return Err(error::LoadAccessLogError {
-                                detail: format!("{}", err),
-                                filename: self.access_log_filename.clone(),
-                            });
-                        }
-                    },
-                    Err(err) => {
-                        return Err(error::LoadAccessLogError {
+        File::open(self.access_log_filename.clone())
+            .map_err(|err| error::LoadAccessLogError {
+                filename: self.access_log_filename.clone(),
+                detail: format!("{}", &err),
+            })
+            .and_then(|file| {
+                let scanner = io::BufReader::new(file).lines();
+                for line in scanner {
+                    if let Err(e) = line
+                        .map_err(|err| error::LoadAccessLogError {
                             detail: format!("{}", err),
                             filename: self.access_log_filename.clone(),
-                        });
+                        })
+                        .and_then(|line| {
+                            self.parse_access_log_line(line)
+                                .map_err(|err| error::LoadAccessLogError {
+                                    detail: format!("{}", err),
+                                    filename: self.access_log_filename.clone(),
+                                })
+                                .and_then(|data| {
+                                    self.calculator
+                                        .add_data(data)
+                                        .map_err(|err| error::LoadAccessLogError {
+                                            detail: format!("{}", err),
+                                            filename: self.access_log_filename.clone(),
+                                        })
+                                        .and_then(|_| Ok(()))
+                                })
+                        })
+                    {
+                        return Err(e);
                     }
-                },
-                Err(err) => {
-                    return Err(error::LoadAccessLogError {
-                        detail: format!("{}", err),
-                        filename: self.access_log_filename.clone(),
-                    });
                 }
-            }
-        }
-
-        Ok(())
+                Ok(())
+            })
     }
 
     pub fn get_result(&self) -> String {
