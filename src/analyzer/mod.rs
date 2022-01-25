@@ -142,6 +142,7 @@ impl Analyzer {
         format!("[{}]", tmp.join(","))
     }
 
+    #[allow(dead_code)]
     pub fn debug_print_detail(&self) {
         let mut sb = String::new();
 
