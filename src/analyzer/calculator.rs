@@ -16,11 +16,12 @@ impl Calculator {
         self.items.push(item);
     }
 
+    #[allow(dead_code)]
     pub fn get_titles(&self) -> String {
         let titles: Vec<String> = self.items.iter().map(|item| item.get_title()).collect();
         titles.join(",")
     }
-
+    #[allow(dead_code)]
     pub fn get_types(&self) -> String {
         let types: Vec<String> = self.items.iter().map(|item| item.get_type()).collect();
         types.join(",")
